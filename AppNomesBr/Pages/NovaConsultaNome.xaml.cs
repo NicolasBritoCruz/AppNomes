@@ -7,6 +7,7 @@ public partial class NovaConsultaNome : ContentPage
 {
     private readonly INomesBrService service;
     private readonly INomesBrRepository repository;
+    private string? sexo;
 
     public NovaConsultaNome(INomesBrService service, INomesBrRepository repository)
     {
@@ -35,7 +36,7 @@ public partial class NovaConsultaNome : ContentPage
 
     private async void BtnPesquisar_Clicked(object? sender, EventArgs e)
     {
-        await service.InserirNovoRegistroNoRanking(TxtNome.Text.ToUpper());
+        await service.InserirNovoRegistroNoRanking(TxtNome.Text.ToUpper(), sexo);
         await CarregarNomes();
     }
 
@@ -43,5 +44,16 @@ public partial class NovaConsultaNome : ContentPage
     {
         var result = await service.ListaMeuRanking();
         this.GrdNomesBr.ItemsSource = result.FirstOrDefault()?.Resultado;
+    }
+
+    private void RadioButton_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+        var RadioButton = sender as Microsoft.Maui.Controls.RadioButton;
+        var valor = RadioButton?.Content.ToString();
+        var sexo = this.sexo;
+        if (valor == "Feminino")
+            this.sexo = "F";
+        else if (valor == "Masculino")
+            this.sexo = "M";
     }
 }

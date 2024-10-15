@@ -27,7 +27,7 @@ namespace AppNomesBr.Service
             {
                 logger.LogInformation("Consultando top 20 nomes no Brasil");
 
-                var result = await ibgeNomesApiService.RetornaCensosNomesRanking();
+                var result = await ibgeNomesApiService.RetornaCensosNomesRanking(cidade, sexo);
                 var rankingNomesRoot = JsonSerializer.Deserialize<RankingNomesRoot[]>(result);
                 if (rankingNomesRoot == null)
                     throw new InvalidDataException("Metodo: \"" + nameof(ListaTop20Nacional) + "\" a variavel \"" + nameof(rankingNomesRoot) + "\" eh nula!");
@@ -41,7 +41,7 @@ namespace AppNomesBr.Service
             }
         }
 
-        public async Task InserirNovoRegistroNoRanking(string nome)
+        public async Task InserirNovoRegistroNoRanking(string nome, string sexo)
         {
             try
             {
@@ -56,7 +56,8 @@ namespace AppNomesBr.Service
                     Nome = nome,
                     Periodo = FormataPeriodo(resultado),
                     Ranking = 1,
-                    Frequencia = resultado != null ? resultado.Sum(x => x.Frequencia) : 0
+                    Frequencia = resultado != null ? resultado.Sum(x => x.Frequencia) : 0,
+                    Sexo = sexo
                 };
 
                 List<NomesBr> antigos = await nomesBrRepository.GetAll();
@@ -88,7 +89,8 @@ namespace AppNomesBr.Service
                 {
                     Frequencia = consultaTodos[i].Frequencia,
                     Nome = consultaTodos[i].Nome,
-                    Ranking = consultaTodos[i].Ranking
+                    Ranking = consultaTodos[i].Ranking,
+                    Sexo = consultaTodos[i].Sexo,
                 };
 
                 retorno[0].Resultado?.Add(novo);
